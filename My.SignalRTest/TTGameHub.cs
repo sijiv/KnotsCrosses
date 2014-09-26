@@ -54,29 +54,63 @@ namespace My.SignalRTest
             currentPlayer.ConnectionId = Context.ConnectionId;
             Groups.Add(Context.ConnectionId, game.GameId.ToString());
             Clients.OthersInGroup(game.GameId.ToString()).SendMessage(string.Format("Player {0} is reconnected to the Game.", currentPlayer.UserId));
-            if (game.ActivePlayer == PlayerType.Challenger)
-            {
-                if (currentPlayer == game.Challenger)
-                {
-                    Clients.Client(currentPlayer.ConnectionId).ActivePlayer(true);
-                }
-                else
-                {
-                    Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false);
-                }
-            }
-            else if (game.ActivePlayer == PlayerType.Rival)
-            {
-                if (currentPlayer == game.Rival)
-                {
-                    Clients.Client(currentPlayer.ConnectionId).ActivePlayer(true);
-                }
-                else
-                {
-                    Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false);
-                }
-            }
+            //if (game.ActivePlayer == PlayerType.Challenger)
+            //{
+            //    if (currentPlayer == game.Challenger)
+            //    {
+            //        Clients.Client(currentPlayer.ConnectionId).ActivePlayer(true);
+            //    }
+            //    else
+            //    {
+            //        Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false);
+            //    }
+            //}
+            //else if (game.ActivePlayer == PlayerType.Rival)
+            //{
+            //    if (currentPlayer == game.Rival)
+            //    {
+            //        Clients.Client(currentPlayer.ConnectionId).ActivePlayer(true);
+            //    }
+            //    else
+            //    {
+            //        Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false);
+            //    }
+            //}
             return base.OnReconnected();
+        }
+
+        public void GetGameState()
+        {
+            var currentPlayer = PlayerLookupQueries.GetPlayerByUserId(Context.User.Identity.Name);
+            var game = currentPlayer.CurrentGame;
+            //currentPlayer.ConnectionId = Context.ConnectionId;
+            //Groups.Add(Context.ConnectionId, game.GameId.ToString());
+            //Clients.OthersInGroup(game.GameId.ToString()).SendMessage(string.Format("Player {0} is reconnected to the Game.", currentPlayer.UserId));
+            if (game != null)
+            {
+                if (game.ActivePlayer == PlayerType.Challenger)
+                {
+                    if (currentPlayer == game.Challenger)
+                    {
+                        Clients.Client(currentPlayer.ConnectionId).ActivePlayer(true);
+                    }
+                    else
+                    {
+                        Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false);
+                    }
+                }
+                else if (game.ActivePlayer == PlayerType.Rival)
+                {
+                    if (currentPlayer == game.Rival)
+                    {
+                        Clients.Client(currentPlayer.ConnectionId).ActivePlayer(true);
+                    }
+                    else
+                    {
+                        Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false);
+                    }
+                }
+            }
         }
 
         public void ChallengePlayer(string playerUserId)

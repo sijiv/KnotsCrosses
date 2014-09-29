@@ -22,6 +22,7 @@ namespace My.SignalRTest
         {
             PlayerLookupQueries.AddPlayer(Context.ConnectionId, Context.User.Identity.Name);
 
+            Clients.All.UpdatePlayerList(PlayerLookupQueries.GetAvailablePlayers());
             return base.OnConnected();
         }
 
@@ -37,14 +38,17 @@ namespace My.SignalRTest
             {
                 var currentPlayer = PlayerLookupQueries.GetPlayer(Context.ConnectionId);
                 var game = currentPlayer.CurrentGame;
-                Groups.Remove(Context.ConnectionId, game.GameId.ToString());
-                Clients.Group(game.GameId.ToString()).SendMessage(string.Format("Player {0} has stopped playing.", currentPlayer.UserId));
-                game.Rival.GameSymbol = Symbol.None;
-                game.Rival.CurrentGame = null;
-                game.Challenger.GameSymbol = Symbol.None;
-                game.Challenger.CurrentGame = null;
+                if (game != null)
+                {
+                    Groups.Remove(Context.ConnectionId, game.GameId.ToString());
+                    Clients.Group(game.GameId.ToString()).SendMessage(string.Format("Player {0} has stopped playing.", currentPlayer.UserId));
+                    game.Rival.GameSymbol = Symbol.None;
+                    game.Rival.CurrentGame = null;
+                    game.Challenger.GameSymbol = Symbol.None;
+                    game.Challenger.CurrentGame = null;
+                }
             }
-
+            Clients.All.UpdatePlayerList(PlayerLookupQueries.GetAvailablePlayers());
             return base.OnDisconnected(stopCalled);
         }
         public override System.Threading.Tasks.Task OnReconnected()
@@ -54,63 +58,30 @@ namespace My.SignalRTest
             currentPlayer.ConnectionId = Context.ConnectionId;
             Groups.Add(Context.ConnectionId, game.GameId.ToString());
             Clients.OthersInGroup(game.GameId.ToString()).SendMessage(string.Format("Player {0} is reconnected to the Game.", currentPlayer.UserId));
-            //if (game.ActivePlayer == PlayerType.Challenger)
-            //{
-            //    if (currentPlayer == game.Challenger)
-            //    {
-            //        Clients.Client(currentPlayer.ConnectionId).ActivePlayer(true);
-            //    }
-            //    else
-            //    {
-            //        Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false);
-            //    }
-            //}
-            //else if (game.ActivePlayer == PlayerType.Rival)
-            //{
-            //    if (currentPlayer == game.Rival)
-            //    {
-            //        Clients.Client(currentPlayer.ConnectionId).ActivePlayer(true);
-            //    }
-            //    else
-            //    {
-            //        Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false);
-            //    }
-            //}
-            return base.OnReconnected();
-        }
-
-        public void GetGameState()
-        {
-            var currentPlayer = PlayerLookupQueries.GetPlayerByUserId(Context.User.Identity.Name);
-            var game = currentPlayer.CurrentGame;
-            //currentPlayer.ConnectionId = Context.ConnectionId;
-            //Groups.Add(Context.ConnectionId, game.GameId.ToString());
-            //Clients.OthersInGroup(game.GameId.ToString()).SendMessage(string.Format("Player {0} is reconnected to the Game.", currentPlayer.UserId));
-            if (game != null)
+            if (game.ActivePlayer == PlayerType.Challenger)
             {
-                if (game.ActivePlayer == PlayerType.Challenger)
+                if (currentPlayer == game.Challenger)
                 {
-                    if (currentPlayer == game.Challenger)
-                    {
-                        Clients.Client(currentPlayer.ConnectionId).ActivePlayer(true);
-                    }
-                    else
-                    {
-                        Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false);
-                    }
+                    Clients.Client(currentPlayer.ConnectionId).ActivePlayer(true);
                 }
-                else if (game.ActivePlayer == PlayerType.Rival)
+                else
                 {
-                    if (currentPlayer == game.Rival)
-                    {
-                        Clients.Client(currentPlayer.ConnectionId).ActivePlayer(true);
-                    }
-                    else
-                    {
-                        Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false);
-                    }
+                    Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false);
                 }
             }
+            else if (game.ActivePlayer == PlayerType.Rival)
+            {
+                if (currentPlayer == game.Rival)
+                {
+                    Clients.Client(currentPlayer.ConnectionId).ActivePlayer(true);
+                }
+                else
+                {
+                    Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false);
+                }
+            }
+            Clients.All.UpdatePlayerList(PlayerLookupQueries.GetAvailablePlayers());
+            return base.OnReconnected();
         }
 
         public void ChallengePlayer(string playerUserId)
@@ -136,37 +107,40 @@ namespace My.SignalRTest
             //Find Game Assigned to User!!
             var currentPlayer = PlayerLookupQueries.GetPlayer(Context.ConnectionId);
             var game = currentPlayer.CurrentGame;
-            Player nextPlayer = null;
-            if (game.ActivePlayer == PlayerType.Challenger && game.Challenger == currentPlayer)
+            if (game != null)
             {
-                game.Board.Positions[move.XPosn, move.YPosn] = currentPlayer.GameSymbol;
-                game.ActivePlayer = PlayerType.Rival;
-                nextPlayer = game.Rival;
-            }
-            else if (game.ActivePlayer == PlayerType.Rival && game.Rival == currentPlayer)
-            {
-                game.Board.Positions[move.XPosn, move.YPosn] = currentPlayer.GameSymbol;
-                game.ActivePlayer = PlayerType.Challenger;
-                nextPlayer = game.Challenger;
-            }
+                Player nextPlayer = null;
+                if (game.ActivePlayer == PlayerType.Challenger && game.Challenger == currentPlayer)
+                {
+                    game.Board.Positions[move.XPosn, move.YPosn] = currentPlayer.GameSymbol;
+                    game.ActivePlayer = PlayerType.Rival;
+                    nextPlayer = game.Rival;
+                }
+                else if (game.ActivePlayer == PlayerType.Rival && game.Rival == currentPlayer)
+                {
+                    game.Board.Positions[move.XPosn, move.YPosn] = currentPlayer.GameSymbol;
+                    game.ActivePlayer = PlayerType.Challenger;
+                    nextPlayer = game.Challenger;
+                }
 
-            var winner = CheckWinLogic(game);
-            if (winner != null)
-            {
-                Clients.Client(nextPlayer.ConnectionId).ActivePlayer(true);
-                Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false);
-                Clients.Group(game.GameId.ToString()).Update(game.Board);
-                Clients.Group(game.GameId.ToString()).SendMessage(string.Format("Player '{0}' to Move next.", nextPlayer.UserId));
-            }
-            else
-            {
-                Clients.Client(nextPlayer.ConnectionId).ActivePlayer(false);
-                Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false);
-                Clients.Group(game.GameId.ToString()).SendMessage(string.Format("Game Ended. Player '{0}' wins the Challenge.", winner.UserId));
-                game.Rival.GameSymbol = Symbol.None;
-                game.Rival.CurrentGame = null;
-                game.Challenger.GameSymbol = Symbol.None;
-                game.Challenger.CurrentGame = null;
+                var winner = CheckWinLogic(game);
+                if (winner != null)
+                {
+                    Clients.Client(nextPlayer.ConnectionId).ActivePlayer(true);
+                    Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false);
+                    Clients.Group(game.GameId.ToString()).Update(game.Board);
+                    Clients.Group(game.GameId.ToString()).SendMessage(string.Format("Player '{0}' to Move next.", nextPlayer.UserId));
+                }
+                else
+                {
+                    Clients.Client(nextPlayer.ConnectionId).ActivePlayer(false);
+                    Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false);
+                    Clients.Group(game.GameId.ToString()).SendMessage(string.Format("Game Ended. Player '{0}' wins the Challenge.", winner.UserId));
+                    game.Rival.GameSymbol = Symbol.None;
+                    game.Rival.CurrentGame = null;
+                    game.Challenger.GameSymbol = Symbol.None;
+                    game.Challenger.CurrentGame = null;
+                }
             }
         }
 

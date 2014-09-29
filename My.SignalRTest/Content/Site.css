@@ -15,6 +15,9 @@ select,
 textarea {
     max-width: 280px;
 }
+.playerList {
+    width: 100px;
+}
 
 #knotsCrossesGame table {
     width: 300px;
@@ -27,4 +30,5 @@ textarea {
 #knotsCrossesGame table td:not(:last-child) {
     border-right: 1px solid maroon;
     width: 100px;
+    height: 100px;
 }

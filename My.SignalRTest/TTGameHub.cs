@@ -22,6 +22,7 @@ namespace My.SignalRTest
         {
             PlayerLookupQueries.AddPlayer(Context.ConnectionId, Context.User.Identity.Name);
 
+            Clients.All.UpdatePlayerList(PlayerLookupQueries.GetAvailablePlayers());
             return base.OnConnected();
         }
 
@@ -47,7 +48,7 @@ namespace My.SignalRTest
                     game.Challenger.CurrentGame = null;
                 }
             }
-
+            Clients.All.UpdatePlayerList(PlayerLookupQueries.GetAvailablePlayers());
             return base.OnDisconnected(stopCalled);
         }
         public override System.Threading.Tasks.Task OnReconnected()
@@ -79,6 +80,7 @@ namespace My.SignalRTest
                     Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false);
                 }
             }
+            Clients.All.UpdatePlayerList(PlayerLookupQueries.GetAvailablePlayers());
             return base.OnReconnected();
         }
 

@@ -15,6 +15,9 @@ select,
 textarea {
     max-width: 280px;
 }
+.playerList {
+    width: 100px;
+}
 
 #knotsCrossesGame table {
     width: 300px;

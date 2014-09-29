@@ -24,11 +24,19 @@
         },
         update: function (ticTacBoard) {
 
+        },
+        updatePlayerList: function (playerList) {
+            $(".playerList").empty();
+            $.each(playerList, function(index, val){
+                $(".playerList").append("<li><h3>" + val.PlayerName + "</h3><p>" + val.Available + "</p></li>")
+            });
+            
         }
     });
     $.connection.hub.start()
         .then(init)
         .then(function () {
+            //ttGame.server.joinLeague();
             //ttGame.server.getGameState();
         })
         .done(function (state) { })

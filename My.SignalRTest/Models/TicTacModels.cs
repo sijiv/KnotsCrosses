@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+//using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -70,6 +72,18 @@ namespace My.SignalRTest.Models
         public static Player GetPlayerByUserId(string userId)
         {
             return _PlayersList.SingleOrDefault(p => p.UserId == userId);
+        }
+        public static IEnumerable GetAvailablePlayers()
+        {
+            var myList = _PlayersList.
+                Where(p => p.ConnectionId != null).
+                Select(p =>
+                    new
+                    {
+                        PlayerName = p.UserId,
+                        Available = p.CurrentGame != null
+                    });
+            return myList;
         }
     }
 

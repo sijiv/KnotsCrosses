@@ -41,6 +41,7 @@ namespace My.SignalRTest.Models
     {
         public string ConnectionId { get; set; }
         public string UserId { get; set; }
+        public string PlayerPictureUrl { get; set; }
         public Symbol GameSymbol { get; set; }
         public Game CurrentGame { get; set; }
     }
@@ -59,7 +60,13 @@ namespace My.SignalRTest.Models
         {
             Player player = _PlayersList.SingleOrDefault(p => p.UserId == userId);
             if (player == null)
-                _PlayersList.Add(new Player() { ConnectionId = connectionId, UserId = userId });
+            {
+                var p = new Player() { ConnectionId = connectionId, UserId = userId };
+                //var externalIdentity = HttpContext.GetOwinContext().Authentication.GetExternalIdentityAsync(DefaultAuthenticationTypes.ExternalCookie);
+                //var pictureClaim = externalIdentity.Result.Claims.FirstOrDefault(c => c.Type.Equals("picture"));
+                //var pictureUrl = pictureClaim.Value;
+                _PlayersList.Add(p);
+            }
             else
                 player.ConnectionId = connectionId; //new connectionId
         }

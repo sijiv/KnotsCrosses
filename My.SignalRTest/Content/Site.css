@@ -18,7 +18,22 @@ textarea {
 .playerList {
     width: 100px;
 }
-
+.playerList li {
+    border: 1px solid darkcyan;
+    background-color: cyan;
+    display: table-row;
+    font: 10px Helvetica lavender;
+    width: 100%;
+}
+.playerList li span{
+    -webkit-border-radius: 0.8em;
+    border-radius: 0.8em;
+    padding: 0 .48em;
+    background-color: white;
+    border-color: darkcyan;
+    position: absolute;
+    right: 3.2em;
+}
 #knotsCrossesGame table {
     width: 300px;
     height: 300px;

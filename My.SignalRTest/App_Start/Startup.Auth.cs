@@ -2,12 +2,14 @@
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
+using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.DataProtection;
 using Microsoft.Owin.Security.Google;
 using Owin;
 using System;
 using My.SignalRTest.Models;
+using System.Security.Claims;
 
 namespace My.SignalRTest
 {
@@ -34,7 +36,7 @@ namespace My.SignalRTest
                         regenerateIdentity: (manager, user) => user.GenerateUserIdentityAsync(manager))
                 }
             });
-            
+
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
 
             // Uncomment the following lines to enable logging in with third party login providers
@@ -50,11 +52,28 @@ namespace My.SignalRTest
             //   appId: "",
             //   appSecret: "");
 
-            //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
-            //{
-            //    ClientId = "",
-            //    ClientSecret = ""
-            //});
+            app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
+            {
+                ClientId = "864274910122-l8lsv7m6bjj2au19647v54pvea2vq8oe.apps.googleusercontent.com",
+                ClientSecret = "CbdBKcxjG56ey5KipTj1b6KE",
+            });
+            //var httpSession = System.Web.HttpContext.Current.Session;
+            //var googleOAuth2AuthenticationOptions = new GoogleOAuth2AuthenticationOptions()
+            //           {
+            //               ClientId = "864274910122-l8lsv7m6bjj2au19647v54pvea2vq8oe.apps.googleusercontent.com",
+            //               ClientSecret = "CbdBKcxjG56ey5KipTj1b6KE",
+            //               Provider = new GoogleOAuth2AuthenticationProvider()
+            //               {
+            //                   OnAuthenticated = async context =>
+            //                   {
+            //                       httpSession.Add("pictureUrl", context.User.GetValue("picture").ToString());
+            //                       //context.Identity.AddClaim(new Claim("picture", context.User.GetValue("picture").ToString()));
+            //                       //context.Identity.AddClaim(new Claim("profile", context.User.GetValue("profile").ToString()));
+            //                   }
+            //               }
+            //           };
+            ////googleOAuth2AuthenticationOptions.Scope.Add("email");
+            //app.UseGoogleAuthentication(googleOAuth2AuthenticationOptions);
 
             app.MapSignalR();
         }

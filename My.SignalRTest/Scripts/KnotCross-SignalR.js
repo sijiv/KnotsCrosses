@@ -28,7 +28,7 @@
         updatePlayerList: function (playerList) {
             $(".playerList").empty();
             $.each(playerList, function(index, val){
-                $(".playerList").append("<li><h3>" + val.PlayerName + "</h3><p>" + val.Available + "</p></li>")
+                $(".playerList").append("<li><h4>" + val.PlayerName + "</h4><span>" + val.Available + "</span></li>")
             });
             
         }

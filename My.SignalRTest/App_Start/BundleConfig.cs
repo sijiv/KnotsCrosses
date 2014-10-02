@@ -27,8 +27,15 @@ namespace My.SignalRTest
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));
 
+            bundles.Add(new StyleBundle("~/Content/jqm").Include(
+                      "~/Content/themes/KnotsCross.min.css",
+                      "~/Content/themes/jquery.mobile.icons.min.css",
+                      "~/Content/jquery.mobile.structure-1.4.2.min"));
+
             bundles.Add(new ScriptBundle("~/bundles/signalR").Include(
                       "~/Scripts/jquery.signalR-{version}.js"));
+            bundles.Add(new ScriptBundle("~/bundles/jqm").Include(
+                      "~/Scripts/jquery.mobile-{version}.min.js"));
 
             // Set EnableOptimizations to false for debugging. For more information,
             // visit http://go.microsoft.com/fwlink/?LinkId=301862

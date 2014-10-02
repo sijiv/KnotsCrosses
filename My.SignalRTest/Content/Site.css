@@ -16,12 +16,14 @@ textarea {
     max-width: 280px;
 }
 .playerList {
-    width: 100px;
-}
-.playerList li {
+    width: 25em;
+    padding-right: 15em;
     border: 1px solid darkcyan;
     background-color: cyan;
-    display: table-row;
+    list-style-type: none;
+}
+.playerList li {
+    /*display: grid;*/
     font: 10px Helvetica lavender;
     width: 100%;
 }
@@ -32,7 +34,8 @@ textarea {
     background-color: white;
     border-color: darkcyan;
     position: absolute;
-    right: 3.2em;
+    right: 15.2em;
+    margin-top: -2.5em;
 }
 #knotsCrossesGame table {
     width: 300px;

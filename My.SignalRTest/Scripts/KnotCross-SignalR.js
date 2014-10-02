@@ -27,10 +27,17 @@
         },
         updatePlayerList: function (playerList) {
             $(".playerList").empty();
-            $.each(playerList, function(index, val){
-                $(".playerList").append("<li><h4>" + val.PlayerName + "</h4><span>" + val.Available + "</span></li>")
+            $.each(playerList, function (index, val) {
+                if ($("#hidUserId").val() != val.PlayerName) {
+                    var lia = $("<li></li>").append("<h4><a href='#'>" + val.PlayerName + "</a></h4>");
+                    if (val.Available) lia.append("<span>Busy</span>");
+                    $(".playerList").append(lia);
+                }
             });
-            
+            $(".playerList a:not(:has('span'))").bind("click", function () {
+                var opponent = $(this).text();
+                ttGame.server.challengePlayer(opponent);
+            });
         }
     });
     $.connection.hub.start()

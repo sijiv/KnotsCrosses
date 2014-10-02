@@ -5,10 +5,12 @@
 
 @section scriptsHead{
     @Scripts.Render(@Url.Content("~/bundles/signalR"))
+    @*@Scripts.Render(@Url.Content("~/bundles/jqm"))
+    @Styles.Render(@Url.Content("~/Content/jqm"))*@
     <script src="/signalr/hubs"></script>
     <script src="~/Scripts/KnotCross-SignalR.js" type="text/javascript"></script>
 }
-<div><ul class="playerList"></ul></div>
+<div style="float: right;"><ul class="playerList"></ul></div>
 <div id="knotsCrossesGame">
 
 </div>

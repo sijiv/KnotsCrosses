@@ -13,7 +13,7 @@ namespace My.SignalRTest.Models
     
     public class TicTacBoard
     {
-        public Symbol[,] Positions = new Symbol[2, 2];
+        public Symbol[,] Positions = new Symbol[3, 3];
     }
 
     public class Game

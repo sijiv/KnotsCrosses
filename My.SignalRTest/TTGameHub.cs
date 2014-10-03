@@ -28,15 +28,14 @@ namespace My.SignalRTest
 
         public override System.Threading.Tasks.Task OnDisconnected(bool stopCalled)
         {
+            var currentPlayer = PlayerLookupQueries.GetPlayer(Context.ConnectionId);
+            currentPlayer.ConnectionId = null;
             if (!stopCalled)
             {
-                var currentPlayer = PlayerLookupQueries.GetPlayer(Context.ConnectionId);
                 Clients.OthersInGroup(currentPlayer.CurrentGame.GameId.ToString()).SendMessage(string.Format("Player {0} got temporarily disconnected.", currentPlayer.UserId));
-                currentPlayer.ConnectionId = null;
             }
             else
             {
-                var currentPlayer = PlayerLookupQueries.GetPlayer(Context.ConnectionId);
                 var game = currentPlayer.CurrentGame;
                 if (game != null)
                 {
@@ -54,33 +53,36 @@ namespace My.SignalRTest
         public override System.Threading.Tasks.Task OnReconnected()
         {
             var currentPlayer = PlayerLookupQueries.GetPlayerByUserId(Context.User.Identity.Name);
-            var game = currentPlayer.CurrentGame;
-            currentPlayer.ConnectionId = Context.ConnectionId;
-            Groups.Add(Context.ConnectionId, game.GameId.ToString());
-            Clients.OthersInGroup(game.GameId.ToString()).SendMessage(string.Format("Player {0} is reconnected to the Game.", currentPlayer.UserId));
-            if (game.ActivePlayer == PlayerType.Challenger)
+            if (currentPlayer != null)
             {
-                if (currentPlayer == game.Challenger)
+                var game = currentPlayer.CurrentGame;
+                currentPlayer.ConnectionId = Context.ConnectionId;
+                Groups.Add(Context.ConnectionId, game.GameId.ToString());
+                Clients.OthersInGroup(game.GameId.ToString()).SendMessage(string.Format("Player {0} is reconnected to the Game.", currentPlayer.UserId));
+                if (game.ActivePlayer == PlayerType.Challenger)
                 {
-                    Clients.Client(currentPlayer.ConnectionId).ActivePlayer(true);
+                    if (currentPlayer == game.Challenger)
+                    {
+                        Clients.Client(currentPlayer.ConnectionId).ActivePlayer(true);
+                    }
+                    else
+                    {
+                        Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false);
+                    }
                 }
-                else
+                else if (game.ActivePlayer == PlayerType.Rival)
                 {
-                    Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false);
+                    if (currentPlayer == game.Rival)
+                    {
+                        Clients.Client(currentPlayer.ConnectionId).ActivePlayer(true);
+                    }
+                    else
+                    {
+                        Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false);
+                    }
                 }
+                Clients.All.UpdatePlayerList(PlayerLookupQueries.GetAvailablePlayers());
             }
-            else if (game.ActivePlayer == PlayerType.Rival)
-            {
-                if (currentPlayer == game.Rival)
-                {
-                    Clients.Client(currentPlayer.ConnectionId).ActivePlayer(true);
-                }
-                else
-                {
-                    Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false);
-                }
-            }
-            Clients.All.UpdatePlayerList(PlayerLookupQueries.GetAvailablePlayers());
             return base.OnReconnected();
         }
 
@@ -124,11 +126,10 @@ namespace My.SignalRTest
                 }
 
                 var winner = CheckWinLogic(game);
-                if (winner != null)
+                if (winner == null)
                 {
                     Clients.Client(nextPlayer.ConnectionId).ActivePlayer(true);
                     Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false);
-                    Clients.Group(game.GameId.ToString()).Update(game.Board);
                     Clients.Group(game.GameId.ToString()).SendMessage(string.Format("Player '{0}' to Move next.", nextPlayer.UserId));
                 }
                 else
@@ -141,6 +142,7 @@ namespace My.SignalRTest
                     game.Challenger.GameSymbol = Symbol.None;
                     game.Challenger.CurrentGame = null;
                 }
+                Clients.Group(game.GameId.ToString()).Update(game.Board);
             }
         }
 

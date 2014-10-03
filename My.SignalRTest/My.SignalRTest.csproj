@@ -507,7 +507,7 @@
     <Content Include="Content\Site.css" />
     <Content Include="Images\Cross.png" />
     <Content Include="Images\Knot&amp;Cross.png" />
-    <Content Include="Images\Knot.png" />
+    <Content Include="Images\Naught.png" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />

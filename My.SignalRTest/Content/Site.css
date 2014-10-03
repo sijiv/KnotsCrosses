@@ -37,6 +37,11 @@ textarea {
     right: 15.2em;
     margin-top: -2.5em;
 }
+.messages {
+    width: 25em;
+    height: 25em;
+    overflow-y: scroll;
+}
 #knotsCrossesGame table {
     width: 300px;
     height: 300px;
@@ -49,4 +54,9 @@ textarea {
     border-right: 1px solid maroon;
     width: 100px;
     height: 100px;
+}
+#knotsCrossesGame img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }

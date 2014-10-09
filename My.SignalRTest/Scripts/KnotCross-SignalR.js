@@ -23,17 +23,20 @@
             $(".messages").prepend("<div>" + nowTime() + "| " + msg + "</div>")
         },
         activePlayer: function (isActive) {
-            if (isActive) {
-                $("table td:not(:has('span'))", gamesSection).click(function () {
+            if (isActive === true) {
+                $("table td:not(:has('img'))", gamesSection).click(function () {
                     // Is cell already occupied?
                     var x = this.id.charAt(0), y = this.id.charAt(1);
                     var move = { XPosn: x, YPosn: y };
                     ttGame.server.playerMove(move);
-                    alert(move.XPosn + ", " + move.YPosn);
-                })
+                    $(this).removeClass("unselectedCellPointer");
+                    //alert(move.XPosn + ", " + move.YPosn);
+                }).addClass("unselectedCellPointer");
             }
             else {
-                $("table td", gamesSection).unbind("click");
+                $("table td", gamesSection)
+                        .unbind("click")
+                        .removeClass("unselectedCellPointer");
             }
         },
         update: function (ticTacBoard) {

@@ -102,6 +102,7 @@ namespace My.SignalRTest
             Clients.Client(currentPlayer.ConnectionId).ActivePlayer(true);
             Clients.Client(rival.ConnectionId).ActivePlayer(false);
             Clients.Group(newGame.GameId.ToString()).Update(newGame.Board);
+            Clients.All.UpdatePlayerList(PlayerLookupQueries.GetAvailablePlayers());
         }
 
         public void PlayerMove(Move move)
@@ -125,6 +126,7 @@ namespace My.SignalRTest
                     nextPlayer = game.Challenger;
                 }
 
+                Clients.Group(game.GameId.ToString()).Update(game.Board);
                 var winner = CheckWinLogic(game);
                 if (winner == null)
                 {
@@ -142,7 +144,6 @@ namespace My.SignalRTest
                     game.Challenger.GameSymbol = Symbol.None;
                     game.Challenger.CurrentGame = null;
                 }
-                Clients.Group(game.GameId.ToString()).Update(game.Board);
             }
         }
 

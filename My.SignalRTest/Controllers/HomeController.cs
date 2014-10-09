@@ -32,6 +32,7 @@ namespace My.SignalRTest.Controllers
 
             return View();
         }
+        [Authorize]
         public ActionResult KnotsAndCross()
         {
             ViewBag.Message = "Knots & Crosses Game Challenge";

@@ -22,21 +22,24 @@
         sendMessage: function (msg) {
             $(".messages").prepend("<div>" + nowTime() + "| " + msg + "</div>")
         },
-        activePlayer: function (isActive) {
+        activePlayer: function (isActive, symbol) {
+            if (symbol === 0) css = "";
+            else if (symbol === 1) css = "unselected-cross";
+            else if (symbol === 2) css = "unselected-naught";
             if (isActive === true) {
                 $("table td:not(:has('img'))", gamesSection).click(function () {
                     // Is cell already occupied?
                     var x = this.id.charAt(0), y = this.id.charAt(1);
                     var move = { XPosn: x, YPosn: y };
                     ttGame.server.playerMove(move);
-                    $(this).removeClass("unselectedCellPointer");
+                    $(this).removeClass(css);
                     //alert(move.XPosn + ", " + move.YPosn);
-                }).addClass("unselectedCellPointer");
+                }).addClass(css);
             }
             else {
                 $("table td", gamesSection)
                         .unbind("click")
-                        .removeClass("unselectedCellPointer");
+                        .removeClass(css);
             }
         },
         update: function (ticTacBoard) {
@@ -49,7 +52,7 @@
             });
         },
         updatePlayerList: function (playerList) {
-            $(".playerList").empty();
+            $(".playerList").empty().unbind("click");
             $.each(playerList, function (index, val) {
                 if ($("#hidUserId").val() != val.PlayerName) {
                     var lia = $("<li></li>").append("<h4><a href='#'>" + val.PlayerName + "</a></h4>");
@@ -57,7 +60,7 @@
                     $(".playerList").append(lia);
                 }
             });
-            $(".playerList a:not(:has('span'))").bind("click", function () {
+            $(".playerList:not(:has('span')) a").bind("click", function () {
                 var opponent = $(this).text();
                 ttGame.server.challengePlayer(opponent);
             });

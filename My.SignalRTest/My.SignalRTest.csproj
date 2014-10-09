@@ -505,8 +505,10 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Images\Cross-hover.png" />
     <Content Include="Images\Cross.png" />
     <Content Include="Images\Knot&amp;Cross.png" />
+    <Content Include="Images\Naught-hover.png" />
     <Content Include="Images\Naught.png" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />

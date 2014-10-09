@@ -63,22 +63,22 @@ namespace My.SignalRTest
                 {
                     if (currentPlayer == game.Challenger)
                     {
-                        Clients.Client(currentPlayer.ConnectionId).ActivePlayer(true);
+                        Clients.Client(currentPlayer.ConnectionId).ActivePlayer(true, currentPlayer.GameSymbol);
                     }
                     else
                     {
-                        Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false);
+                        Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false, currentPlayer.GameSymbol);
                     }
                 }
                 else if (game.ActivePlayer == PlayerType.Rival)
                 {
                     if (currentPlayer == game.Rival)
                     {
-                        Clients.Client(currentPlayer.ConnectionId).ActivePlayer(true);
+                        Clients.Client(currentPlayer.ConnectionId).ActivePlayer(true, currentPlayer.GameSymbol);
                     }
                     else
                     {
-                        Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false);
+                        Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false, currentPlayer.GameSymbol);
                     }
                 }
                 Clients.All.UpdatePlayerList(PlayerLookupQueries.GetAvailablePlayers());
@@ -99,8 +99,8 @@ namespace My.SignalRTest
             Groups.Add(rival.ConnectionId, newGame.GameId.ToString());
             Clients.Group(newGame.GameId.ToString()).SendMessage(string.Format("Players {0} challenged {1} for a Tic Tac Game.", currentPlayer.UserId, rival.UserId));
             newGame.ActivePlayer= PlayerType.Challenger;
-            Clients.Client(currentPlayer.ConnectionId).ActivePlayer(true);
-            Clients.Client(rival.ConnectionId).ActivePlayer(false);
+            Clients.Client(currentPlayer.ConnectionId).ActivePlayer(true, currentPlayer.GameSymbol);
+            Clients.Client(rival.ConnectionId).ActivePlayer(false, rival.GameSymbol);
             Clients.Group(newGame.GameId.ToString()).Update(newGame.Board);
             Clients.All.UpdatePlayerList(PlayerLookupQueries.GetAvailablePlayers());
         }
@@ -130,19 +130,19 @@ namespace My.SignalRTest
                 var winner = CheckWinLogic(game);
                 if (winner == null)
                 {
-                    Clients.Client(nextPlayer.ConnectionId).ActivePlayer(true);
-                    Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false);
+                    Clients.Client(nextPlayer.ConnectionId).ActivePlayer(true, nextPlayer.GameSymbol);
+                    Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false, currentPlayer.GameSymbol);
                     Clients.Group(game.GameId.ToString()).SendMessage(string.Format("Player '{0}' to Move next.", nextPlayer.UserId));
                 }
                 else
                 {
-                    Clients.Client(nextPlayer.ConnectionId).ActivePlayer(false);
-                    Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false);
-                    Clients.Group(game.GameId.ToString()).SendMessage(string.Format("Game Ended. Player '{0}' wins the Challenge.", winner.UserId));
                     game.Rival.GameSymbol = Symbol.None;
                     game.Rival.CurrentGame = null;
                     game.Challenger.GameSymbol = Symbol.None;
                     game.Challenger.CurrentGame = null;
+                    Clients.Client(nextPlayer.ConnectionId).ActivePlayer(false, nextPlayer.GameSymbol);
+                    Clients.Client(currentPlayer.ConnectionId).ActivePlayer(false, currentPlayer.GameSymbol);
+                    Clients.Group(game.GameId.ToString()).SendMessage(string.Format("Game Ended. Player '{0}' wins the Challenge.", winner.UserId));
                 }
             }
         }

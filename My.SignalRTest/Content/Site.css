@@ -60,6 +60,15 @@ textarea {
     margin-left: auto;
     margin-right: auto;
 }
-.unselectedCellPointer{
+.unselected-cross:hover{
     cursor: pointer;
+    background-image:url('../Images/Cross-hover.png');
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.unselected-naught:hover {
+    cursor: pointer;
+    background-image: url('../Images/Naught-hover.png');
+    background-repeat: no-repeat;
+    background-position: center;
 }

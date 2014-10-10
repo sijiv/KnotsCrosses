@@ -52,13 +52,19 @@ namespace My.SignalRTest
             //   appId: "",
             //   appSecret: "");
 
+#if DEBUG
             app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
             {
-                //ClientId = "864274910122-l8lsv7m6bjj2au19647v54pvea2vq8oe.apps.googleusercontent.com",
-                //ClientSecret = "CbdBKcxjG56ey5KipTj1b6KE",
+                ClientId = "864274910122-l8lsv7m6bjj2au19647v54pvea2vq8oe.apps.googleusercontent.com",
+                ClientSecret = "CbdBKcxjG56ey5KipTj1b6KE"
+            });
+#else
+            app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
+            {
                 ClientId = "864274910122-25vvr19q1l5cn3iokapvftv9mtpjujr4.apps.googleusercontent.com",
                 ClientSecret = "stwwxHjbnWBgPVcPVjhETBRA",
             });
+#endif
             //var httpSession = System.Web.HttpContext.Current.Session;
             //var googleOAuth2AuthenticationOptions = new GoogleOAuth2AuthenticationOptions()
             //           {

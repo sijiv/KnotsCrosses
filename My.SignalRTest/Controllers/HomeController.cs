@@ -15,14 +15,14 @@ namespace My.SignalRTest.Controllers
 
         public ActionResult About()
         {
-            ViewBag.Message = "Your application description page.";
+            ViewBag.Message = "SignalR with ASP.Net MVC";
 
             return View();
         }
 
         public ActionResult Contact()
         {
-            ViewBag.Message = "Your contact page.";
+            ViewBag.Message = "Siji's contact page.";
 
             return View();
         }
